@@ -16,6 +16,7 @@ import loginUser from './users/mutations/login-user';
 //QUERIES
 import getUsers from './users/queries/getUsers';
 import getUser from './users/queries/getUser';
+import getRandomUser from './users/queries/getRandomUser';
 
 //AUTH
 import { auth } from './authz/authToken';
@@ -37,7 +38,8 @@ app.use("/graphql", cors(), graphqlHTTP(req => ({
       name: "RootQueryType",
       fields: {
         users: getUsers,
-        user: getUser
+        user: getUser,
+        randomUser: getRandomUser
       }
     }),
     mutation: new GraphQLObjectType({

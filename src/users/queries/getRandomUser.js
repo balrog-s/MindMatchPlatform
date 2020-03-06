@@ -3,7 +3,6 @@ import humps from 'humps';
 import user from '../types/user';
 import {
   GraphQLObjectType,
-  GraphQLList,
   GraphQLBoolean,
 } from 'graphql'
 
@@ -12,32 +11,34 @@ const userProperties = [
   'first_name',
   'last_name',
   'username',
-  'email',
-  'created_at',
-  'updated_at'
 ];
 
-const getUsers = ({ isAuthenticated }) => {
-  if (!isAuthenticated) {
+const getRandomUser = (ctx) => {
+  if (!ctx.isAuthenticated) {
     throw new Error(`User is not authenticated`);
   }
   return pg('core.users')
-    .select(userProperties)
+    .first(userProperties)
+    .whereNot({
+      id: ctx.user.id
+    })
+    .orderBy(pg.raw('random()'))
     .then(humps.camelizeKeys)
-    .then(users => ({ error: false, payload: users }));
-}
+    .then(users => ({ error: false, payload: users }))
+    .catch(err => ({ error: true, payload: err }));
+};
 
 module.exports = {
   type: new GraphQLObjectType({
-    name: 'GetUsers',
+    name: 'GetRandomUser',
     fields: {
       error: {
         type: GraphQLBoolean
       },
       payload: {
-        type: new GraphQLList(user.type)
+        type: user.type
       }
     }
   }),
-  resolve: (obj, { input }, ctx) => getUsers(ctx)
+  resolve: (obj, args, ctx) => getRandomUser(ctx)
 }
