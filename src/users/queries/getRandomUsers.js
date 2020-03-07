@@ -4,6 +4,7 @@ import user from '../types/user';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
+  GraphQLList,
 } from 'graphql'
 
 const userProperties = [
@@ -13,16 +14,17 @@ const userProperties = [
   'username',
 ];
 
-const getRandomUser = (ctx) => {
+const getRandomUsers = (ctx) => {
   if (!ctx.isAuthenticated) {
     throw new Error(`User is not authenticated`);
   }
   return pg('core.users')
-    .first(userProperties)
+    .select(userProperties)
     .whereNot({
       id: ctx.user.id
     })
     .orderBy(pg.raw('random()'))
+    .limit(6)
     .then(humps.camelizeKeys)
     .then(users => ({ error: false, payload: users }))
     .catch(err => ({ error: true, payload: err }));
@@ -30,15 +32,15 @@ const getRandomUser = (ctx) => {
 
 module.exports = {
   type: new GraphQLObjectType({
-    name: 'GetRandomUser',
+    name: 'GetRandomUsers',
     fields: {
       error: {
         type: GraphQLBoolean
       },
       payload: {
-        type: user.type
+        type: new GraphQLList(user.type)
       }
     }
   }),
-  resolve: (obj, args, ctx) => getRandomUser(ctx)
+  resolve: (obj, args, ctx) => getRandomUsers(ctx)
 }
