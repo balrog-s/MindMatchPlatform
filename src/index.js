@@ -8,15 +8,18 @@ import {
   GraphQLSchema,
 } from "graphql";
 
-//MUTATIONS
+//USER MUTATIONS
 import createUser from './users/mutations/create-user';
 import updateUser from './users/mutations/update-user';
 import loginUser from './users/mutations/login-user';
 
-//QUERIES
+//USER QUERIES
 import getUsers from './users/queries/getUsers';
 import getUser from './users/queries/getUser';
 import getRandomUsers from './users/queries/getRandomUsers';
+
+//MATCH MUTATIONS
+import matchRequest from './matches/mutations/match-request';
 
 //AUTH
 import { auth } from './authz/authToken';
@@ -47,7 +50,8 @@ app.use("/graphql", cors(), graphqlHTTP(req => ({
       fields: () => ({
         CreateUser: createUser,
         UpdateUser: updateUser,
-        LoginUser: loginUser
+        LoginUser: loginUser,
+        MatchRequest: matchRequest
       })
     })
   }),
