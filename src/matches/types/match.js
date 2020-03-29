@@ -8,8 +8,11 @@ import {
 * User type definition
 **/
 const type = new GraphQLObjectType({
-  name: 'MatchRequest',
+  name: 'Match',
   fields: {
+    id: {
+      type: GraphQLID
+    },
     initiatorUserId: {
       type: GraphQLID
     },

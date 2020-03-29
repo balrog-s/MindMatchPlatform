@@ -1,70 +1,67 @@
 import {
   GraphQLInputObjectType,
   GraphQLID,
+  GraphQLString
 } from 'graphql';
 import match from '../types/match';
 import pg from '../../db';
 import humps from 'humps';
 import uuidv4 from 'uuid/v4';
 
-const MATCH_REQUESTED = 'MATCH_REQUESTED';
-
-const matchRequestInputType = new GraphQLInputObjectType({
-  name: 'MatchRequestInput',
+const matchUpdateInputType = new GraphQLInputObjectType({
+  name: 'MatchUpdateInput',
   fields: {
-    initiatorUserId: { type: GraphQLID },
-    requestedUserId: { type: GraphQLID },
+    id: { type: GraphQLID },
+    status: { type: GraphQLString }
   }
 });
 
-const insertMatchRequestedEvent = ({ initiatorUserId, requestedUserId }, trx) => {
+const insertMatchUpdatedEvent = ({ id, requestedUserId, status }, trx) => {
   const streamId = uuidv4();
   const eventId = uuidv4();
+  const event = `MATCH_${status}`;
   return pg('event_sourcing.event_store')
     .transacting(trx)
     .insert({
       id: eventId,
-      event_type: MATCH_REQUESTED,
+      event_type: event,
       payload: {
-        initiatorUserId,
+        matchId: id,
         requestedUserId
       },
       created_at: new Date(),
-      created_by: initiatorUserId,
+      created_by: requestedUserId,
       stream_id: streamId,
       stream_version: 1
     });
 };
 
-const insertMatchRequestedResource = ({ initiatorUserId, requestedUserId }, trx) => {
-  const id = uuidv4();
+const updateMatchStatus = ({ id, status, userId }, trx) => {
   return pg('core.users_matches')
     .transacting(trx)
-    .insert({
-      id: id,
-      initiator_user_id: initiatorUserId,
-      requested_user_id: requestedUserId,
-      status: 'PENDING'
-    })
+    .update({ status: status })
+    .where({ id: id, requested_user_id: userId })
     .returning('*')
     .then(result => result[0])
     .then(humps.camelizeKeys)
 };
 
-const requestMatch = ({ initiatorUserId, requestedUserId }, { isAuthenticated }) => {
+const updateMatch = ({ id, status }, { isAuthenticated, user }) => {
   let matchState;
   if (!isAuthenticated) {
     throw new Error(`User is not authenticated`);
   }
   return pg.transaction(trx => {
-    return insertMatchRequestedResource({
-      initiatorUserId,
-      requestedUserId
+    return updateMatchStatus({
+      id,
+      userId: user.id,
+      status
     }, trx)
       .tap(result => matchState = result)
-      .then(() => insertMatchRequestedEvent({
-        initiatorUserId,
-        requestedUserId
+      .then(() => insertMatchUpdatedEvent({
+        id,
+        userId: user.id,
+        status
       }, trx))
       .then(trx.commit)
       .catch(trx.rollback)
@@ -79,9 +76,9 @@ const requestMatch = ({ initiatorUserId, requestedUserId }, { isAuthenticated })
 module.exports = {
   type: match.type,
   args: {
-    input: { type: matchRequestInputType }
+    input: { type: matchUpdateInputType }
   },
   resolve: (obj, { input }, ctx) => {
-    return requestMatch(input, ctx);
+    return updateMatch(input, ctx);
   }
 }
