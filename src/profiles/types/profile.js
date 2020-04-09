@@ -13,7 +13,7 @@ const type = new GraphQLObjectType({
     id: {
       type: GraphQLID
     },
-    user_id: {
+    userId: {
       type: GraphQLID
     },
     bio: {

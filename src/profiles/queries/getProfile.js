@@ -3,12 +3,11 @@ import humps from 'humps';
 import profile from '../types/profile';
 import {
   GraphQLObjectType,
-  GraphQLList,
   GraphQLBoolean,
 } from 'graphql';
 
 const matchProperties = [
-  'core.users.id',
+  'core.users.id as user_id',
   'core.users.username',
   'core.users.first_name',
   'core.users.last_name',
@@ -17,7 +16,7 @@ const matchProperties = [
   'core.users_profile.bio'
 ];
 
-const getMatches = ({ isAuthenticated }, {userId}) => {
+const getProfile = ({ isAuthenticated }, {userId}) => {
   if (!isAuthenticated) {
     throw new Error(`User is not authenticated`);
   }
@@ -41,9 +40,9 @@ module.exports = {
         type: GraphQLBoolean
       },
       payload: {
-        type: new GraphQLList(profile.type)
+        type: profile.type
       }
     }
   }),
-  resolve: (obj, { input }, ctx) => getMatches(ctx, {userId: input.id})
+  resolve: (obj, { input }, ctx) => getProfile(ctx, {userId: input.id})
 }
