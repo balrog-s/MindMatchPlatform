@@ -78,7 +78,7 @@ const updateUser = ({ id, firstName, lastName, username, password, email }, { is
       hashedPassword,
       email,
     }, trx)
-      .tap(result => userResource = result)
+      .then(result => userResource = result)
       .then(() => insertUpdatedUserEvent({
         id,
         firstName,

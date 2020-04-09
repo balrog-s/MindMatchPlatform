@@ -5,13 +5,14 @@ import {
   GraphQLObjectType,
   GraphQLBoolean,
   GraphQLList,
-} from 'graphql'
+} from 'graphql';
 
 const userProperties = [
   'id',
   'first_name',
   'last_name',
   'username',
+  'updated_at'
 ];
 
 const getRandomUsers = (ctx) => {

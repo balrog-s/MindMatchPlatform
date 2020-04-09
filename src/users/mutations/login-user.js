@@ -27,7 +27,7 @@ const loginUserInputType = new GraphQLInputObjectType({
  * @param {username}
  * @return {eventId} The event stored for this login attempt.
  */
-const insertLoggedUserInEvent = ({ user, tokenPayload }) => {
+const insertLoggedUserInEvent = ({ user, payload }) => {
   const eventId = uuidv4();
   const { password, ...userData } = user;
 
@@ -37,16 +37,20 @@ const insertLoggedUserInEvent = ({ user, tokenPayload }) => {
       event_type: LOGGED_USER_IN,
       payload: {
         ...userData,
-        token: tokenPayload
+        token: payload.token
       },
       created_at: new Date(),
       created_by: userData.id,
       stream_id: userData.id,
       stream_version: 1
-    }).then(() => tokenPayload);
+    }).then(() => payload);
 };
 
-const findUserByUsername = ({ username }) => pg('core.users').first(['id', 'email', 'username', 'password']).where({ username }).then(humps.camelizeKeys);
+const findUserByUsername = ({ username }) =>
+  pg('core.users')
+  .first(['id', 'email', 'username', 'password', 'first_name', 'last_name'])
+  .where({ username })
+  .then(humps.camelizeKeys);
 
 /**
  * This function is the controller for logging the user in.
@@ -73,9 +77,9 @@ const loginUser = ({ username, password }) => {
         }
       } else {
         return verifyPassword({ providedPassword: password, user })
-          .then(tokenPayload => insertLoggedUserInEvent({ user, tokenPayload }))
+          .then(payload => insertLoggedUserInEvent({ user, payload }))
       }
-    });
+    })
 };
 
 /**
@@ -94,7 +98,16 @@ const verifyPassword = ({ providedPassword, user }) => {
     }
     return {
       error: false,
-      payload: jwt.sign(user, 'secretkey', { expiresIn: '1d' })
+      payload: {
+        token: jwt.sign(user, 'secretkey', { expiresIn: '1d' }),
+        user: JSON.stringify({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName
+        })
+      }
     };
   });
 };
@@ -107,7 +120,17 @@ module.exports = {
         type: GraphQLBoolean
       },
       payload: {
-        type: GraphQLString
+        type: new GraphQLObjectType({
+          name: 'LoginPayload',
+          fields: {
+            token: {
+              type: GraphQLString
+            },
+            user: {
+              type: GraphQLString
+            }
+          }
+        })
       }
     }
   }),

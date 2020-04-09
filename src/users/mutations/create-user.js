@@ -1,7 +1,6 @@
 import {
   GraphQLInputObjectType,
   GraphQLString,
-  GraphQLID,
 } from 'graphql';
 import user from '../types/user';
 import pg from '../../db';
@@ -74,7 +73,7 @@ const createUser = ({ firstName, lastName, username, password, email }) => {
       hashedPassword,
       email
     }, trx)
-      .tap(result => userResource = result)
+      .then(result => userResource = result)
       .then(() => insertCreatedUserEvent({
         id,
         firstName,
