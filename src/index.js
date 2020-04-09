@@ -25,6 +25,12 @@ import matchUpdate from './matches/mutations/match-update';
 //MATCH QUERIES
 import getMatches from './matches/queries/getMatches';
 
+//PROFILE MUTATIONS
+import createProfile from './profiles/mutations/create-profile';
+
+//PROFILE QUERIES
+import getProfile from './profiles/queries/getProfile';
+
 //AUTH
 import { auth } from './authz/authToken';
 
@@ -47,7 +53,8 @@ app.use("/graphql", cors(), graphqlHTTP(req => ({
         users: getUsers,
         user: getUser,
         randomUsers: getRandomUsers,
-        matches: getMatches
+        matches: getMatches,
+        profile: getProfile
       }
     }),
     mutation: new GraphQLObjectType({
@@ -57,7 +64,8 @@ app.use("/graphql", cors(), graphqlHTTP(req => ({
         UpdateUser: updateUser,
         LoginUser: loginUser,
         MatchRequest: matchRequest,
-        MatchUpdate: matchUpdate
+        MatchUpdate: matchUpdate,
+        CreateProfile: createProfile
       })
     })
   }),
