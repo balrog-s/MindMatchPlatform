@@ -4,6 +4,24 @@ import {
   GraphQLString,
 } from 'graphql';
 
+const initiator = new GraphQLObjectType({
+  name: "Initiator",
+  fields: {
+    id: {
+      type: GraphQLID
+    },
+    firstName: {
+      type: GraphQLString
+    },
+    lastName: {
+      type: GraphQLString
+    },
+    username: {
+      type: GraphQLString
+    }
+  }
+});
+
 /**
 * User type definition
 **/
@@ -12,6 +30,9 @@ const type = new GraphQLObjectType({
   fields: {
     id: {
       type: GraphQLID
+    },
+    initiator: {
+      type: initiator
     },
     initiatorUserId: {
       type: GraphQLID
