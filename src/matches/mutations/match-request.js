@@ -17,8 +17,7 @@ const matchRequestInputType = new GraphQLInputObjectType({
   }
 });
 
-const insertMatchRequestedEvent = ({ initiatorUserId, requestedUserId }, trx) => {
-  const streamId = uuidv4();
+const insertMatchRequestedEvent = ({ initiatorUserId, requestedUserId, streamId }, trx) => {
   const eventId = uuidv4();
   return pg('event_sourcing.event_store')
     .transacting(trx)
@@ -61,10 +60,11 @@ const requestMatch = ({ initiatorUserId, requestedUserId }, { isAuthenticated })
       initiatorUserId,
       requestedUserId
     }, trx)
-      .tap(result => matchState = result)
+      .then(result => matchState = result)
       .then(() => insertMatchRequestedEvent({
         initiatorUserId,
-        requestedUserId
+        requestedUserId,
+        streamId: matchState.id
       }, trx))
       .then(trx.commit)
       .catch(trx.rollback)

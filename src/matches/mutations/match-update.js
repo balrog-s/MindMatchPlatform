@@ -16,8 +16,7 @@ const matchUpdateInputType = new GraphQLInputObjectType({
   }
 });
 
-const insertMatchUpdatedEvent = ({ id, requestedUserId, status }, trx) => {
-  const streamId = uuidv4();
+const insertMatchUpdatedEvent = ({ id, requestedUserId, status, streamId }, trx) => {
   const eventId = uuidv4();
   const event = `MATCH_${status}`;
   return pg('event_sourcing.event_store')
@@ -57,11 +56,12 @@ const updateMatch = ({ id, status }, { isAuthenticated, user }) => {
       userId: user.id,
       status
     }, trx)
-      .tap(result => matchState = result)
+      .then(result => matchState = result)
       .then(() => insertMatchUpdatedEvent({
         id,
         userId: user.id,
-        status
+        status,
+        streamId: matchState.id
       }, trx))
       .then(trx.commit)
       .catch(trx.rollback)
