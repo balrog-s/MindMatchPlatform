@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'production') {
       host: 'localhost',
       port: 5432,
       user: 'postgres',
-      password: 'password',
+      password: '1234',
       database: 'mindmatch_platform',
     },
   });
