@@ -14,7 +14,6 @@ const CREATED_PROFILE = 'CREATED_PROFILE';
 const createProfileInputType = new GraphQLInputObjectType({
   name: 'CreateProfileInput',
   fields: {
-    id: { type: GraphQLID },
     userId: { type: GraphQLID},
     bio: { type: GraphQLString },
   }
@@ -40,10 +39,10 @@ const insertCreatedProfileEvent = ({ id, userId, bio, streamId }, trx) => {
 }
 
 const insertProfile = ({ id, bio, userId }, trx) => {
-  return pg('core.users_profiles')
+  return pg('core.users_profile')
     .transacting(trx)
     .insert({
-      id: id,
+      id,
       bio,
       user_id: userId
     })
@@ -52,7 +51,7 @@ const insertProfile = ({ id, bio, userId }, trx) => {
     .then(humps.camelizeKeys)
 };
 
-const createProfile = ({ id, userId, bio }) => {
+const createProfile = ({ userId, bio }) => {
   const id = uuidv4();
   let profile;
   return pg.transaction(trx => {
@@ -65,7 +64,8 @@ const createProfile = ({ id, userId, bio }) => {
       .then(() => insertCreatedProfileEvent({
         id,
         userId,
-        bio
+        bio,
+        streamId: id
       }, trx))
       .then(trx.commit)
       .catch(trx.rollback)
