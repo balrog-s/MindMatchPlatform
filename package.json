@@ -10,6 +10,8 @@
     "start-local": "npm run build && nodemon --watch src --exec npm run start-dev",
     "create-migration": "knex migrate:make  ${MIGRATION_NAME}",
     "latest": "knex --knexfile ./knexfile.js migrate:latest",
+    "seed": "knex --knexfile ./knexfile.js seed:run",
+    "create-seed": "knex seed:make ${SEED_NAME}",
     "rollback": "knex --knexfile ./knexfile.js migrate:rollback",
     "latest-dev": "knex --knexfile ./knexfile.js migrate:latest",
     "rollback-dev": "knex --knexfile ./knexfile.js migrate:rollback"
