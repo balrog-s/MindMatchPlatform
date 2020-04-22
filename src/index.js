@@ -27,6 +27,7 @@ import getMatches from './matches/queries/getMatches';
 
 //PROFILE MUTATIONS
 import createProfile from './profiles/mutations/create-profile';
+import updateProfile from './profiles/mutations/update-profile';
 
 //PROFILE QUERIES
 import getProfile from './profiles/queries/getProfile';
@@ -65,7 +66,8 @@ app.use("/graphql", cors(), graphqlHTTP(req => ({
         LoginUser: loginUser,
         MatchRequest: matchRequest,
         MatchUpdate: matchUpdate,
-        CreateProfile: createProfile
+        CreateProfile: createProfile,
+        UpdateProfile: updateProfile
       })
     })
   }),
