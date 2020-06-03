@@ -1,7 +1,7 @@
 import express from 'express';
-import graphqlHTTP from "express-graphql";
 import bodyParser from 'body-parser';
 import cors from 'cors';
+const { ApolloServer } = require('apollo-server-express');
 
 import {
   GraphQLObjectType,
@@ -12,6 +12,7 @@ import {
 import createUser from './users/mutations/create-user';
 import updateUser from './users/mutations/update-user';
 import loginUser from './users/mutations/login-user';
+import userCreatedSubscription from './users/subscriptions/user-created';
 
 //USER QUERIES
 import getUsers from './users/queries/getUsers';
@@ -35,45 +36,85 @@ import getProfile from './profiles/queries/getProfile';
 //AUTH
 import { auth } from './authz/authToken';
 
-const app = express();
-const port = process.env.PORT || 3000;
+import resolvers from './resolvers';
+import typeDefs from './typeDefs';
+import http from 'http';
 
-app.get("/", function (req, res) {
-  res.send("Welcome to my API: Version 1.0.0");
-});
+const app = express();
+const PORT = process.env.PORT || 4000;
 
 app.use(bodyParser.json());
 app.use(auth);
 
-app.use("/graphql", cors(), graphqlHTTP(req => ({
-  context: { user: req.user, isAuthenticated: req.isAuthenticated },
-  schema: new GraphQLSchema({
-    query: new GraphQLObjectType({
-      name: "RootQueryType",
-      fields: {
-        users: getUsers,
-        user: getUser,
-        randomUsers: getRandomUsers,
-        matches: getMatches,
-        profile: getProfile
-      }
-    }),
-    mutation: new GraphQLObjectType({
-      name: "RootMutationType",
-      fields: () => ({
-        CreateUser: createUser,
-        UpdateUser: updateUser,
-        LoginUser: loginUser,
-        MatchRequest: matchRequest,
-        MatchUpdate: matchUpdate,
-        CreateProfile: createProfile,
-        UpdateProfile: updateProfile
-      })
-    })
-  }),
-  graphiql: true
-})));
-
-app.listen(port, () => {
-  console.log(`LISTENING ON ${port}`);
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({req, res}) => {
+    return { user: req.user || null, isAuthenticated: req.isAuthenticated }
+  },
+  subscriptions: {
+    onConnect: () => console.log('Connected to websocket'),
+  }
 });
+
+server.applyMiddleware({ app })
+
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
+  console.log(`🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
+})
+
+// app.get("/", function (req, res) {
+//   res.send("Welcome to my API: Version 1.0.0");
+// });
+
+// app.use(bodyParser.json());
+// app.use(auth);
+
+// const schema = new GraphQLSchema({
+//   subscription: new GraphQLObjectType({
+//     name: "RootSubscriptionType",
+//     fields: {
+//       UserCreated: userCreatedSubscription,
+//     }
+//   }),
+//   query: new GraphQLObjectType({
+//     name: "RootQueryType",
+//     fields: {
+//       users: getUsers,
+//       user: getUser,
+//       randomUsers: getRandomUsers,
+//       matches: getMatches,
+//       profile: getProfile
+//     }
+//   }),
+//   mutation: new GraphQLObjectType({
+//     name: "RootMutationType",
+//     fields: () => ({
+//       CreateUser: createUser,
+//       UpdateUser: updateUser,
+//       LoginUser: loginUser,
+//       MatchRequest: matchRequest,
+//       MatchUpdate: matchUpdate,
+//       CreateProfile: createProfile,
+//       UpdateProfile: updateProfile
+//     })
+//   })
+// });
+
+// const server = new ApolloServer({
+//   schema,
+//   context: ({req, res}) => ({ user: req.user, isAuthenticated: req.isAuthenticated })
+// });
+
+// server.applyMiddleware({
+//   app, // app is from an existing express app
+// });
+
+// app.listen(port, () => {
+//   console.log(`LISTENING ON ${port}`);
+//   console.log(`🚀 Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`)
+// });
