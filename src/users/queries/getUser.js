@@ -1,11 +1,5 @@
 import pg from '../../db';
 import humps from 'humps';
-import user from '../types/user';
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLBoolean,
-} from 'graphql'
 
 const userProperties = [
   'id',
@@ -17,10 +11,10 @@ const userProperties = [
   'updated_at',
 ];
 
-const getUser = (id, { isAuthenticated }) => {
-  if (!isAuthenticated) {
-    throw new Error(`User is not authenticated`);
-  }
+const getUser = (id) => {
+  // if (!isAuthenticated) {
+  //   throw new Error(`User is not authenticated`);
+  // }
   return pg('core.users')
     .first(userProperties)
     .where({
@@ -31,22 +25,4 @@ const getUser = (id, { isAuthenticated }) => {
     .catch(err => ({ error: true, payload: err }));
 };
 
-module.exports = {
-  type: new GraphQLObjectType({
-    name: 'GetUser',
-    fields: {
-      error: {
-        type: GraphQLBoolean
-      },
-      payload: {
-        type: user.type
-      }
-    }
-  }),
-  args: {
-    id: {
-      type: GraphQLString
-    }
-  },
-  resolve: (obj, { id }, ctx) => getUser(id, ctx)
-}
+module.exports = getUser;

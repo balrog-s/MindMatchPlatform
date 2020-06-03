@@ -1,11 +1,5 @@
 import pg from '../../db';
 import humps from 'humps';
-import user from '../types/user';
-import {
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLBoolean,
-} from 'graphql'
 
 const userProperties = [
   'id',
@@ -17,7 +11,8 @@ const userProperties = [
   'updated_at',
 ];
 
-const getUsers = ({ isAuthenticated }) => {
+const getUsers = ({isAuthenticated}) => {
+  console.log(isAuthenticated);
   if (!isAuthenticated) {
     throw new Error(`User is not authenticated`);
   }
@@ -28,17 +23,4 @@ const getUsers = ({ isAuthenticated }) => {
     .catch(err => ({ error: true, payload: err }));
 };
 
-module.exports = {
-  type: new GraphQLObjectType({
-    name: 'GetUsers',
-    fields: {
-      error: {
-        type: GraphQLBoolean
-      },
-      payload: {
-        type: new GraphQLList(user.type)
-      }
-    }
-  }),
-  resolve: (obj, { input }, ctx) => getUsers(ctx)
-}
+module.exports = getUsers

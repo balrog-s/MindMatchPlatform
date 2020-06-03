@@ -1,11 +1,5 @@
 import pg from '../../db';
 import humps from 'humps';
-import user from '../types/user';
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLList,
-} from 'graphql';
 
 const userProperties = [
   'users.id',
@@ -39,17 +33,4 @@ const getRandomUsers = (ctx) => {
     .catch(err => ({ error: true, payload: err }));;
 };
 
-module.exports = {
-  type: new GraphQLObjectType({
-    name: 'GetRandomUsers',
-    fields: {
-      error: {
-        type: GraphQLBoolean
-      },
-      payload: {
-        type: new GraphQLList(user.type)
-      }
-    }
-  }),
-  resolve: (obj, args, ctx) => getRandomUsers(ctx)
-}
+module.exports = getRandomUsers;

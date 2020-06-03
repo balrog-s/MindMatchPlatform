@@ -112,32 +112,4 @@ const verifyPassword = ({ providedPassword, user }) => {
   });
 };
 
-module.exports = {
-  type: new GraphQLObjectType({
-    name: 'LoginUser',
-    fields: {
-      error: {
-        type: GraphQLBoolean
-      },
-      payload: {
-        type: new GraphQLObjectType({
-          name: 'LoginPayload',
-          fields: {
-            token: {
-              type: GraphQLString
-            },
-            user: {
-              type: GraphQLString
-            }
-          }
-        })
-      }
-    }
-  }),
-  args: {
-    input: { type: loginUserInputType }
-  },
-  resolve: (obj, { input }, ctx) => {
-    return loginUser(input);
-  }
-}
+module.exports = loginUser;
