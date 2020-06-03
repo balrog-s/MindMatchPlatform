@@ -8,7 +8,8 @@ type Query {
 }
 
 type Mutation {
-  LoginUser(username: String, password: String): LoginResponse 
+  LoginUser(username: String, password: String): LoginResponse,
+  CreateUser(input: CreateUserParams): CreateUserResponse
 }
 
 type ProfileResponse {
@@ -56,12 +57,25 @@ type UsersResponse {
 
 type LoginResponse {
   error: Boolean,
-  payload: Login
+  payload: LoginPayload
 }
 
-type Login {
+type LoginPayload {
   token: String,
   user: String
+}
+
+input CreateUserParams {
+  firstName: String,
+  lastName: String,
+  username: String,
+  password: String,
+  email: String
+}
+
+type CreateUserResponse {
+  error: Boolean,
+  payload: User
 }
 
 type User {
