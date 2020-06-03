@@ -1,5 +1,9 @@
 import user from './users/models/user';
+import match from './matches/models/match';
+import profile from './profiles/models/profile';
+
 import pubsub from './pubsub';
+
 const resolvers = {
   Query: {
     users: (obj, _, ctx) => {
@@ -12,7 +16,10 @@ const resolvers = {
       return user.getRandomUsers(ctx)
     },
     matches: (obj, _, ctx) => {
-      
+      return match.getMatches(ctx);
+    },
+    profile: (obj, args, ctx) => {
+      return profile.getProfile(ctx, args);
     }
   },
   Mutation: {

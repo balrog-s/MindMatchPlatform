@@ -3,19 +3,31 @@ type Query {
   users: UsersResponse,
   user: UserResponse,
   randomUsers: UsersResponse,
-  matches: MatchesResponse
+  matches: MatchesResponse,
+  profile(userId: String): ProfileResponse,
 }
 
 type Mutation {
   LoginUser(username: String, password: String): LoginResponse 
 }
 
-type MatchesResponse {
+type ProfileResponse {
   error: Boolean,
-  payload: [Matches]
+  payload: Profile
 }
 
-type Matches {
+type Profile {
+  id: String,
+  userId: String,
+  bio: String
+}
+
+type MatchesResponse {
+  error: Boolean,
+  payload: [Match]
+}
+
+type Match {
   id: String,
   initiator: Initiator,
   initiatorUserId: String,
@@ -31,6 +43,7 @@ type Initiator {
   lastName: String,
   username: String
 }
+
 type UserResponse {
   error: Boolean,
   payload: [User]

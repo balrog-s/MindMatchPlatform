@@ -1,10 +1,5 @@
 import pg from '../../db';
 import humps from 'humps';
-import profile from '../types/profile';
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-} from 'graphql';
 
 const matchProperties = [
   'core.users.id as user_id',
@@ -32,17 +27,4 @@ const getProfile = ({ isAuthenticated }, {userId}) => {
     });
 };
 
-module.exports = {
-  type: new GraphQLObjectType({
-    name: 'GetProfile',
-    fields: {
-      error: {
-        type: GraphQLBoolean
-      },
-      payload: {
-        type: profile.type
-      }
-    }
-  }),
-  resolve: (obj, { input }, ctx) => getProfile(ctx, {userId: input.id})
-}
+module.exports = getProfile;

@@ -1,12 +1,5 @@
 import pg from '../../db';
 import humps from 'humps';
-import match from '../types/match';
-import Promise from 'bluebird';
-import {
-  GraphQLObjectType,
-  GraphQLList,
-  GraphQLBoolean,
-} from 'graphql';
 
 const matchProperties = [
   'core.users_matches.id',
@@ -53,17 +46,4 @@ const getMatches = ({ isAuthenticated, user }) => {
     });
 };
 
-module.exports = {
-  type: new GraphQLObjectType({
-    name: 'GetMatches',
-    fields: {
-      error: {
-        type: GraphQLBoolean
-      },
-      payload: {
-        type: new GraphQLList(match.type)
-      }
-    }
-  }),
-  resolve: (obj, { input }, ctx) => getMatches(ctx)
-}
+module.exports = getMatches;
