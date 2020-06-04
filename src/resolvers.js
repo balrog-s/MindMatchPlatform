@@ -27,11 +27,16 @@ const resolvers = {
       return user.login(input);
     },
     CreateUser: (obj, args, ctx) => {
-      return user.create(args.input)
-      .then(test => {
-        console.log(test);
-        return test;
-      });
+      return user.create(args.input);
+    },
+    UpdateUser: (obj, args, ctx) => {
+      return user.update(args.input)
+    },
+    CreateProfile: (obj, args, ctx) => {
+      return profile.create(args)
+    },
+    UpdateProfile: (obj, args, ctx) => {
+      return profile.update(args)
     }
   }
 };

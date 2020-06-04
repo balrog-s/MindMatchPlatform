@@ -1,24 +1,9 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLString,
-  GraphQLID,
-} from 'graphql';
-import profile from '../types/profile';
 import pg from '../../db';
 import humps from 'humps';
 import uuidv4 from 'uuid/v4';
 
 
 const UPDATED_PROFILE = 'UPDATED_PROFILE';
-
-const updateProfileInputType = new GraphQLInputObjectType({
-  name: 'UpdateProfileInput',
-  fields: {
-    id: { type: GraphQLID },
-    userId: { type: GraphQLID},
-    bio: { type: GraphQLString },
-  }
-});
 
 const insertUpdatedProfileEvent = ({ id, userId, bio, streamId }, trx) => {
   const eventId = uuidv4();
@@ -77,12 +62,4 @@ const updateProfile = ({ id, userId, bio }) => {
     });
 }
 
-module.exports = {
-  type: profile.type,
-  args: {
-    input: { type: updateProfileInputType }
-  },
-  resolve: (obj, { input }, ctx) => {
-    return updateProfile(input);
-  }
-}
+module.exports = updateProfile;

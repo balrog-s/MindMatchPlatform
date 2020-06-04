@@ -1,23 +1,9 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLString,
-  GraphQLID,
-} from 'graphql';
-import profile from '../types/profile';
 import pg from '../../db';
 import humps from 'humps';
 import uuidv4 from 'uuid/v4';
 
 
 const CREATED_PROFILE = 'CREATED_PROFILE';
-
-const createProfileInputType = new GraphQLInputObjectType({
-  name: 'CreateProfileInput',
-  fields: {
-    userId: { type: GraphQLID},
-    bio: { type: GraphQLString },
-  }
-});
 
 const insertCreatedProfileEvent = ({ id, userId, bio, streamId }, trx) => {
   const eventId = uuidv4();
@@ -77,12 +63,4 @@ const createProfile = ({ userId, bio }) => {
     });
 }
 
-module.exports = {
-  type: profile.type,
-  args: {
-    input: { type: createProfileInputType }
-  },
-  resolve: (obj, { input }, ctx) => {
-    return createProfile(input);
-  }
-}
+module.exports = createProfile;

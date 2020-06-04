@@ -9,7 +9,31 @@ type Query {
 
 type Mutation {
   LoginUser(username: String, password: String): LoginResponse,
-  CreateUser(input: CreateUserParams): CreateUserResponse
+  CreateUser(input: CreateUserParams): CreateUserResponse,
+  UpdateUser(input: UpdateUserParams): UpdateUserResponse,
+  CreateProfile(input: CreateProfileParams): CreateProfileResponse,
+  UpdateProfile(input: UpdateProfileParams): UpdateProfileResponse,
+}
+
+input UpdateProfileParams {
+  id: String,
+  userId: String,
+  bio: String
+}
+
+type UpdateProfileResponse {
+  error: Boolean,
+  payload: Profile
+}
+
+input CreateProfileParams {
+  userId: String,
+  bio: String
+}
+
+type CreateProfileResponse {
+  error: Boolean,
+  payload: Profile
 }
 
 type ProfileResponse {
@@ -63,6 +87,20 @@ type LoginResponse {
 type LoginPayload {
   token: String,
   user: String
+}
+
+input UpdateUserParams {
+  id: String,
+  firstName: String,
+  lastName: String,
+  username: String,
+  password: String,
+  email: String
+}
+
+type UpdateUserResponse {
+  error: Boolean,
+  payload: User
 }
 
 input CreateUserParams {
