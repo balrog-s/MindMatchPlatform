@@ -1,21 +1,8 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLID,
-} from 'graphql';
-import match from '../types/match';
 import pg from '../../db';
 import humps from 'humps';
 import uuidv4 from 'uuid/v4';
 
 const MATCH_REQUESTED = 'MATCH_REQUESTED';
-
-const matchRequestInputType = new GraphQLInputObjectType({
-  name: 'MatchRequestInput',
-  fields: {
-    initiatorUserId: { type: GraphQLID },
-    requestedUserId: { type: GraphQLID },
-  }
-});
 
 const insertMatchRequestedEvent = ({ initiatorUserId, requestedUserId, streamId }, trx) => {
   const eventId = uuidv4();
@@ -76,12 +63,4 @@ const requestMatch = ({ initiatorUserId, requestedUserId }, { isAuthenticated })
     });
 }
 
-module.exports = {
-  type: match.type,
-  args: {
-    input: { type: matchRequestInputType }
-  },
-  resolve: (obj, { input }, ctx) => {
-    return requestMatch(input, ctx);
-  }
-}
+module.exports = requestMatch;

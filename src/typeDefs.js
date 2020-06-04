@@ -13,6 +13,28 @@ type Mutation {
   UpdateUser(input: UpdateUserParams): UpdateUserResponse,
   CreateProfile(input: CreateProfileParams): CreateProfileResponse,
   UpdateProfile(input: UpdateProfileParams): UpdateProfileResponse,
+  MatchRequest(input: MatchRequestParams): MatchRequestResponse,
+  UpdateMatch(input: UpdateMatchParams): UpdateMatchResponse,
+}
+
+input UpdateMatchParams {
+  id: String,
+  status: String,
+}
+
+type UpdateMatchResponse {
+  error: Boolean,
+  payload: Match
+}
+
+input MatchRequestParams {
+  initiatorUserId: String,
+  requestedUserId: String
+}
+
+type MatchRequestResponse {
+  error: Boolean,
+  payload: Match
 }
 
 input UpdateProfileParams {

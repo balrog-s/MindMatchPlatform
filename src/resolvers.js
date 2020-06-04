@@ -30,13 +30,19 @@ const resolvers = {
       return user.create(args.input);
     },
     UpdateUser: (obj, args, ctx) => {
-      return user.update(args.input)
+      return user.update(args.input);
     },
     CreateProfile: (obj, args, ctx) => {
-      return profile.create(args)
+      return profile.create(args);
     },
     UpdateProfile: (obj, args, ctx) => {
-      return profile.update(args)
+      return profile.update(args);
+    },
+    MatchRequest: (obj, args, ctx) => {
+      return match.request(args, ctx);
+    },
+    UpdateMatch: (pbj, args, ctx) => {
+      return match.update(args, ctx);
     }
   }
 };

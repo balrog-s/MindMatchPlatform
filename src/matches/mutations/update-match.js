@@ -1,20 +1,7 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLID,
-  GraphQLString
-} from 'graphql';
-import match from '../types/match';
 import pg from '../../db';
 import humps from 'humps';
 import uuidv4 from 'uuid/v4';
 
-const matchUpdateInputType = new GraphQLInputObjectType({
-  name: 'MatchUpdateInput',
-  fields: {
-    id: { type: GraphQLID },
-    status: { type: GraphQLString }
-  }
-});
 
 const insertMatchUpdatedEvent = ({ id, requestedUserId, status, streamId }, trx) => {
   const eventId = uuidv4();
@@ -73,12 +60,4 @@ const updateMatch = ({ id, status }, { isAuthenticated, user }) => {
     });
 }
 
-module.exports = {
-  type: match.type,
-  args: {
-    input: { type: matchUpdateInputType }
-  },
-  resolve: (obj, { input }, ctx) => {
-    return updateMatch(input, ctx);
-  }
-}
+module.exports = updateMatch;
