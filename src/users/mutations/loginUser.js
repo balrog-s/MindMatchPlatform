@@ -1,10 +1,4 @@
 import jwt from 'jsonwebtoken';
-import {
-  GraphQLInputObjectType,
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLBoolean
-} from 'graphql';
 import pg from '../../db';
 import humps from 'humps';
 import hash from 'password-hash';
@@ -13,14 +7,6 @@ import R from 'ramda';
 import Promise from 'bluebird';
 
 const LOGGED_USER_IN = 'LOGGED_USER_IN';
-
-const loginUserInputType = new GraphQLInputObjectType({
-  name: 'LoginUserInput',
-  fields: {
-    username: { type: GraphQLString },
-    password: { type: GraphQLString }
-  }
-});
 
 /**
  * This function is responsible for logging a login attempt by the specified user.

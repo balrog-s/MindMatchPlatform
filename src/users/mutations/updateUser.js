@@ -80,4 +80,3 @@ const updateUser = ({ id, firstName, lastName, username, password, email }, { is
 }
 
 module.exports = updateUser;
-}
