@@ -8,13 +8,28 @@ type Query {
 }
 
 type Mutation {
-  LoginUser(username: String, password: String): LoginResponse,
+  LoginUser(input: LoginUserParams): LoginResponse,
   CreateUser(input: CreateUserParams): CreateUserResponse,
   UpdateUser(input: UpdateUserParams): UpdateUserResponse,
   CreateProfile(input: CreateProfileParams): CreateProfileResponse,
   UpdateProfile(input: UpdateProfileParams): UpdateProfileResponse,
   MatchRequest(input: MatchRequestParams): MatchRequestResponse,
   UpdateMatch(input: UpdateMatchParams): UpdateMatchResponse,
+  StartChat(input: StartChatParams): StartChatResponse,
+}
+
+input LoginUserParams {
+  username: String,
+  password: String
+}
+
+input StartChatParams {
+  matchId: String
+}
+
+type StartChatResponse {
+  error: Boolean,
+  payload: Chat
 }
 
 input UpdateMatchParams {
@@ -72,6 +87,15 @@ type Profile {
 type MatchesResponse {
   error: Boolean,
   payload: [Match]
+}
+
+type Chat {
+  id: String,
+  status: String,
+  initiatorUserId: String,
+  requestedUserId: String,
+  createdAt: String,
+  updatedAt: String
 }
 
 type Match {

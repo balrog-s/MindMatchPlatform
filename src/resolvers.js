@@ -1,6 +1,7 @@
 import user from './users/models/user';
 import match from './matches/models/match';
 import profile from './profiles/models/profile';
+import chat from './chats/models/chat';
 
 import pubsub from './pubsub';
 
@@ -23,8 +24,8 @@ const resolvers = {
     }
   },
   Mutation: {
-    LoginUser: (obj, input, ctx) => {
-      return user.login(input);
+    LoginUser: (obj, args, ctx) => {
+      return user.login(args.input);
     },
     CreateUser: (obj, args, ctx) => {
       return user.create(args.input);
@@ -33,7 +34,7 @@ const resolvers = {
       return user.update(args.input);
     },
     CreateProfile: (obj, args, ctx) => {
-      return profile.create(args);
+      return profile.create(args, ctx);
     },
     UpdateProfile: (obj, args, ctx) => {
       return profile.update(args);
@@ -43,6 +44,9 @@ const resolvers = {
     },
     UpdateMatch: (pbj, args, ctx) => {
       return match.update(args, ctx);
+    },
+    StartChat: (obj, args, ctx) => {
+      return chat.startChat(args, ctx);
     }
   }
 };
