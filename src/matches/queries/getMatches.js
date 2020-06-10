@@ -25,6 +25,7 @@ const getMatches = ({ isAuthenticated, user }) => {
       matches.map(
         match => ({
           id: match.id,
+          initiator_user_id: match.initiator_user_id,
           requested_user_id: match.requested_user_id,
           status: match.status,
           created_at: match.created_at,

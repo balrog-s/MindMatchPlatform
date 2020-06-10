@@ -27,9 +27,9 @@ const insertChatResource = ({ matchId, userId }, trx) => {
     .transacting(trx)
     .insert({
       id: id,
-      matchId: matchId,
+      match_id: matchId,
       status: 'ACTIVE',
-      createdBy: userId
+      created_by: userId
     })
     .returning('*')
     .then(result => result[0])
@@ -50,12 +50,15 @@ const startChat = ({ matchId }, { isAuthenticated, user }) => {
       .then(() => insertStartChatEvent({
         matchId,
         userId: user.id,
-        streamId: matchState.id
+        streamId: chatState.id
       }, trx))
       .then(trx.commit)
       .catch(trx.rollback)
   })
-    .then(() => matchState)
+    .then(() => ({
+      error: false,
+      payload: chatState
+    }))
     .catch(err => {
       console.log('ERROR', err);
       throw err;

@@ -3,7 +3,7 @@ import humps from 'humps';
 import uuidv4 from 'uuid/v4';
 
 
-const insertMatchUpdatedEvent = ({ id, requestedUserId, status, streamId }, trx) => {
+const insertMatchUpdatedEvent = ({ id, userId, status, streamId }, trx) => {
   const eventId = uuidv4();
   const event = `MATCH_${status}`;
   return pg('event_sourcing.event_store')
@@ -13,10 +13,10 @@ const insertMatchUpdatedEvent = ({ id, requestedUserId, status, streamId }, trx)
       event_type: event,
       payload: {
         matchId: id,
-        requestedUserId
+        requestedUserId: userId
       },
       created_at: new Date(),
-      created_by: requestedUserId,
+      created_by: userId,
       stream_id: streamId,
       stream_version: 1
     });
@@ -53,7 +53,10 @@ const updateMatch = ({ id, status }, { isAuthenticated, user }) => {
       .then(trx.commit)
       .catch(trx.rollback)
   })
-    .then(() => matchState)
+    .then(() => ({
+      error: false,
+      payload: matchState
+    }))
     .catch(err => {
       console.log('ERROR', err);
       throw err;

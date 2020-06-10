@@ -92,8 +92,7 @@ type MatchesResponse {
 type Chat {
   id: String,
   status: String,
-  initiatorUserId: String,
-  requestedUserId: String,
+  matchId: String,
   createdAt: String,
   updatedAt: String
 }

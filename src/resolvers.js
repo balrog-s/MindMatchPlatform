@@ -34,19 +34,19 @@ const resolvers = {
       return user.update(args.input);
     },
     CreateProfile: (obj, args, ctx) => {
-      return profile.create(args, ctx);
+      return profile.create(args.input, ctx);
     },
     UpdateProfile: (obj, args, ctx) => {
-      return profile.update(args);
+      return profile.update(args.input);
     },
     MatchRequest: (obj, args, ctx) => {
-      return match.request(args, ctx);
+      return match.request(args.input, ctx);
     },
-    UpdateMatch: (pbj, args, ctx) => {
-      return match.update(args, ctx);
+    UpdateMatch: (obj, args, ctx) => {
+      return match.update(args.input, ctx);
     },
     StartChat: (obj, args, ctx) => {
-      return chat.startChat(args, ctx);
+      return chat.start(args.input, ctx);
     }
   }
 };

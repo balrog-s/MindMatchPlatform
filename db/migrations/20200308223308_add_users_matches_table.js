@@ -1,7 +1,7 @@
 
 exports.up = function (knex) {
   return knex.schema.createTableIfNotExists("core.users_matches", t => {
-    t.uuid('id').notNull();
+    t.uuid('id').notNull().unique();
     t.uuid('initiator_user_id').notNull();
     t.uuid('requested_user_id').notNull();
     t.enum('status', ['APPROVED', 'REJECTED', 'BLOCKED', 'PENDING']).notNull();
