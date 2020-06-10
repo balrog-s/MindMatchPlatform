@@ -31,6 +31,12 @@ const type = new GraphQLObjectType({
     updatedAt: {
       type: GraphQLString
     },
+    bio: {
+      type: GraphQLString
+    },
+    profileId: {
+      type: GraphQLID
+    }
   }
 });
 

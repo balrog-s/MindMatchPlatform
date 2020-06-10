@@ -1,27 +1,9 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLString,
-  GraphQLID,
-} from 'graphql';
-import user from '../types/user';
 import pg from '../../db';
 import humps from 'humps';
 import hash from 'password-hash';
 import uuidv4 from 'uuid/v4';
 
 const UPDATED_USER = 'UPDATED_USER';
-
-const updateUserInputType = new GraphQLInputObjectType({
-  name: 'UpdateUserInput',
-  fields: {
-    id: { type: GraphQLID },
-    firstName: { type: GraphQLString },
-    lastName: { type: GraphQLString },
-    username: { type: GraphQLString },
-    password: { type: GraphQLString },
-    email: { type: GraphQLString },
-  }
-});
 
 const insertUpdatedUserEvent = ({ id, firstName, lastName, username, password, email }, trx) => {
   const eventId = uuidv4();
@@ -97,12 +79,4 @@ const updateUser = ({ id, firstName, lastName, username, password, email }, { is
     });
 }
 
-module.exports = {
-  type: user.type,
-  args: {
-    input: { type: updateUserInputType }
-  },
-  resolve: (obj, { input }, ctx) => {
-    return updateUser(input, ctx);
-  }
-}
+module.exports = updateUser;

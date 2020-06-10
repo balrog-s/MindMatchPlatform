@@ -85,19 +85,11 @@ const createUser = ({ firstName, lastName, username, password, email }) => {
       .then(trx.commit)
       .catch(trx.rollback)
   })
-    .then(() => userResource)
+    .then(() => ({error: false, payload: userResource}))
     .catch(err => {
       console.log('ERROR', err);
       throw err;
     });
 }
 
-module.exports = {
-  type: user.type,
-  args: {
-    input: { type: createUserInputType }
-  },
-  resolve: (obj, { input }, ctx) => {
-    return createUser(input);
-  }
-}
+module.exports = createUser;

@@ -1,9 +1,3 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLString,
-  GraphQLID,
-} from 'graphql';
-import profile from '../types/profile';
 import pg from '../../db';
 import humps from 'humps';
 import uuidv4 from 'uuid/v4';
@@ -11,15 +5,7 @@ import uuidv4 from 'uuid/v4';
 
 const CREATED_PROFILE = 'CREATED_PROFILE';
 
-const createProfileInputType = new GraphQLInputObjectType({
-  name: 'CreateProfileInput',
-  fields: {
-    userId: { type: GraphQLID},
-    bio: { type: GraphQLString },
-  }
-});
-
-const insertCreatedProfileEvent = ({ id, userId, bio, streamId }, trx) => {
+const insertCreatedProfileEvent = ({ profileId, userId, bio, streamId }, trx) => {
   const eventId = uuidv4();
   return pg('event_sourcing.event_store')
     .transacting(trx)
@@ -27,7 +13,7 @@ const insertCreatedProfileEvent = ({ id, userId, bio, streamId }, trx) => {
       id: eventId,
       event_type: CREATED_PROFILE,
       payload: {
-        id,
+        id: profileId,
         user_id: userId,
         bio,
       },
@@ -38,7 +24,8 @@ const insertCreatedProfileEvent = ({ id, userId, bio, streamId }, trx) => {
     });
 }
 
-const insertProfile = ({ id, bio, userId }, trx) => {
+const insertProfile = ({ userId, bio }, trx) => {
+  const id = uuidv4();
   return pg('core.users_profile')
     .transacting(trx)
     .insert({
@@ -51,21 +38,23 @@ const insertProfile = ({ id, bio, userId }, trx) => {
     .then(humps.camelizeKeys)
 };
 
-const createProfile = ({ userId, bio }) => {
-  const id = uuidv4();
+const createProfile = ({ bio }, { user, isAuthenticated }) => {
+  const userId = user.id;
   let profile;
+  if (!isAuthenticated) {
+    throw new Error(`User is not authenticated`);
+  }
   return pg.transaction(trx => {
     return insertProfile({
-      id,
       userId,
       bio
     }, trx)
       .then(result => profile = result)
       .then(() => insertCreatedProfileEvent({
-        id,
+        profileId: profile.id,
         userId,
         bio,
-        streamId: id
+        streamId: profile.id
       }, trx))
       .then(trx.commit)
       .catch(trx.rollback)
@@ -77,12 +66,4 @@ const createProfile = ({ userId, bio }) => {
     });
 }
 
-module.exports = {
-  type: profile.type,
-  args: {
-    input: { type: createProfileInputType }
-  },
-  resolve: (obj, { input }, ctx) => {
-    return createProfile(input);
-  }
-}
+module.exports = createProfile;
