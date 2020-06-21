@@ -16,6 +16,34 @@ type Mutation {
   MatchRequest(input: MatchRequestParams): MatchRequestResponse,
   UpdateMatch(input: UpdateMatchParams): UpdateMatchResponse,
   StartChat(input: StartChatParams): StartChatResponse,
+  SendMessage(input: SendMessageParams): SendMessageResponse
+}
+
+type Subscription {
+  messageSent(input: SubscriptionMessageInput): SendMessageResponse
+}
+
+input SubscriptionMessageInput {
+  chatId: String
+}
+
+input SendMessageParams {
+  chatId: String,
+  payload: String,
+}
+
+type SendMessageResponse {
+  error: Boolean
+  payload: Message
+}
+
+type Message {
+  id: String,
+  chatId: String,
+  payload: String,
+  createdBy: String,
+  updatedAt: String,
+  createdAt: String
 }
 
 input LoginUserParams {
@@ -175,7 +203,8 @@ type User {
 
 schema {
   query: Query
-  mutation: Mutation
+  mutation: Mutation,
+  subscription: Subscription
 }
 `;
 

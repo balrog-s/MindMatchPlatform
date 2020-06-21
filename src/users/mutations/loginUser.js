@@ -85,7 +85,7 @@ const verifyPassword = ({ providedPassword, user }) => {
     return {
       error: false,
       payload: {
-        token: jwt.sign(user, 'secretkey', { expiresIn: '1d' }),
+        token: jwt.sign(user, 'secretkey'),
         user: JSON.stringify({
           id: user.id,
           username: user.username,

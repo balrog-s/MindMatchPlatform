@@ -18,6 +18,9 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({req}) => {
+    if (!req) {
+      req = {};
+    }
     return { user: req.user || null, isAuthenticated: req.isAuthenticated }
   },
   subscriptions: {

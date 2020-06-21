@@ -2,10 +2,24 @@ import user from './users/models/user';
 import match from './matches/models/match';
 import profile from './profiles/models/profile';
 import chat from './chats/models/chat';
-
+import message from './chats/models/message';
+import {withFilter} from 'apollo-server-express';
 import pubsub from './pubsub';
 
 const resolvers = {
+  Subscription: {
+    messageSent: {
+      resolve: (payload) => {
+        return payload;
+      },
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('MESSAGE_SENT'),
+        (payload, variables) => {
+          return payload.payload.chatId === variables.input.chatId
+        }
+      )
+    }
+  },
   Query: {
     users: (obj, _, ctx) => {
       return user.getUsers(ctx);
@@ -47,6 +61,13 @@ const resolvers = {
     },
     StartChat: (obj, args, ctx) => {
       return chat.start(args.input, ctx);
+    },
+    SendMessage: (obj, args, ctx) => {
+      return message.send(args.input, ctx)
+      .then(result => {
+        pubsub.publish(`MESSAGE_SENT`, result);
+        return result;
+      });
     }
   }
 };
